@@ -99,6 +99,7 @@ export const verifyUser = async (req, res) => {
 export const loginUser = async (req, res) => {
     const { error } = loginSchema.validate(req.body);
     if (error) {
+        res.clearCookie('token');
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({ message: error.details[0].message });
     }
 
@@ -107,6 +108,7 @@ export const loginUser = async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
+            res.clearCookie('token');
             return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({ message: 'User not found, invalid credentials!' });
         }
 
@@ -116,6 +118,7 @@ export const loginUser = async (req, res) => {
         }
 
         if (!user.isVerified) {
+            res.clearCookie('token');
             return res.status(HTTP_STATUS_CODE.FORBIDDEN).json({ message: 'User is not verified' });
         }
 
